@@ -12,4 +12,4 @@
 !*/
 !*/*
 !makefile_*
-bank/back/node_modules/
+**/node_modules/
