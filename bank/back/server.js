@@ -18,12 +18,7 @@ app.use('/login', loginRouter);
 app.use('/user', userRouter);
 app.get('/refresh', Refresh);
 
-process.on('SIGINT', () => {
-  mongoose.connection.close();
-  process.exit(0);
-});
 
 app.listen(PORT, HOSTNAME, () => {
-
   console.log(`Express server running at http://${HOSTNAME}:${PORT}/`);
 });

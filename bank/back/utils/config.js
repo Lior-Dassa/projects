@@ -9,4 +9,10 @@ try {
 } catch (error) {
     console.log(error.message);
     process.exit(0);
-} 
+}
+
+process.on('SIGINT', () => {
+    mongoose.connection.close();
+    process.exit(0);
+  });
+  
