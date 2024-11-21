@@ -1,6 +1,7 @@
 *
 *.out
 *.class
+*.env
 !*.java
 !*.html
 !*.css
@@ -11,4 +12,4 @@
 !*/
 !*/*
 !makefile_*
-*/node_modules/
+bank/back/node_modules/
