@@ -1,0 +1,14 @@
+*
+*.out
+*.class
+!*.java
+!*.html
+!*.css
+!*.js
+!*.md
+!*.h
+!*.c
+!*/
+!*/*
+!makefile_*
+*/node_modules/
