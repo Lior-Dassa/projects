@@ -1,21 +1,35 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const CODE_EXP = 1 * 60 * 1000;
 
 const transactionSchema = new mongoose.Schema({
     "from": String,
     "to": String,
-    "amount": Number,
+    "amount": {type: mongoose.Schema.Types.Decimal128,
+                validate: {
+                    validator: (value) => value > 0,
+                    message: "Transfer amount must be greater than 0"
+                }},
     "time": Date
-});
+}, {timestamps: {updatedAt: false}});
 
 const userSchema = new mongoose.Schema({
     "_id": String,
     "password": String,
     "firstName": String,
     "lastName": String,
-    "balance": Number,
-    "transactions": [mongoose.Schema.Types.ObjectId]
+    "balance": {
+        type: mongoose.Schema.Types.Decimal128,
+        validate: {
+            validator: function(v) {
+                return v >= 0;
+            },
+            message: "Balance can not be negative"
+        }
+    },
+    "transactions": [{type : mongoose.Schema.Types.ObjectId,
+                        ref: "Transaction"
+    }]
 }, {timestamps: true});
 
 const pendingUserSchema = new mongoose.Schema({
@@ -26,7 +40,7 @@ const pendingUserSchema = new mongoose.Schema({
     "confirmationCode": String,
     "exp": {
         type: Date,
-        default: () => {return (Date.now() + (CODE_EXP));}
+        default: () => {return (Date.now() + CODE_EXP);}
     }
 });
 

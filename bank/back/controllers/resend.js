@@ -1,9 +1,12 @@
-import mockSMS from "./mocks/mock-sms-confirmation.js";
+import generateSmsCode from "../utils/generate-sms-code.js";
+import sendEmail from "../utils/send-email.js";
 
 let Resend = function(req, res) {
-    let smsCode = mockSMS();
+    let smsCode = generateSmsCode();
 
-    return res.status(200).json({code: smsCode});
+    sendEmail(req.body.email, smsCode);
+
+    return res.status(200).json({message: "A new confirmation code was sent to " + req.body.email});
 }
 
 export default Resend;

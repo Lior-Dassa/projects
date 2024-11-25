@@ -8,7 +8,6 @@ let Signup = async function(req, res) {
     userInfo.confirmationCode = generateSmsCode();
 
     try {
-        sendEmail(userInfo.email, userInfo.confirmationCode);
         await createUser(userInfo);
     } catch (err) {
         if (err.message == "11000") {
@@ -20,6 +19,8 @@ let Signup = async function(req, res) {
                 "oh oh something went wrong"});
         }
     }
+
+    sendEmail(userInfo.email, userInfo.confirmationCode);
 
     res.status(200).json({message: "confirmation code was sent to " + userInfo.email});
 }

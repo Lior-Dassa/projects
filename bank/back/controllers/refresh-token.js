@@ -11,9 +11,10 @@ const Refresh = function(req, res) {
         return res.status(401).json({error: "Unautorized", message: error.message});
     }
 
-    res.status(200).json({access_token: generateAccessToken(email),
-        refresh_token: generateRefreshToken(email)
-    });
+    res.cookie("access_token", generateAccessToken(email),{httpOnly: true});
+    res.cookie("refresh_token", generateRefreshToken(email),{httpOnly: true});
+
+    res.status(200).json({message: "the token have been refreshed"});
 }
 
 export default Refresh;

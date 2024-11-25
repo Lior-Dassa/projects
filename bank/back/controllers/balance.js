@@ -4,14 +4,7 @@ import {verifyAccessToken} from "../utils/jwt.js";
 import { getUser } from "../utils/database.js";
 
 const Balance = async function(req, res) {
-    const token = getToken(req);
-    let email = null;
-
-    try {
-        email = verifyAccessToken(token);
-    } catch (error) {
-        return res.status(401).json({error: "Unauthorized", message : error.message});
-    }
+    let email = req.email;
 
     let userBalance = null;
 
@@ -21,7 +14,6 @@ const Balance = async function(req, res) {
         return res.status(500).json({error: "Server error", message : "Uh oh something went wrong"});
     }
      
-
     res.status(200).json({message: "balance was fetched", balance: userBalance});
 }
 

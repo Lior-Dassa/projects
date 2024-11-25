@@ -1,8 +1,23 @@
 import mongoose from "mongoose";
 import generateSmsCode from "../utils/generate-sms-code.js";
 import getRandomArbitrary from "./genrate-random-number.js";
-import mockSMS from "../controllers/mocks/mock-sms-confirmation.js";
-import { PendingUser , User, Transaction, CODE_EXP} from "./mongo-models.js";
+import { PendingUser , User, Transaction} from "./mongo-models.js";
+import {CODE_EXP} from "../utils/mongo-models.js"
+import sendEmail from "./send-email.js";
+
+const MONGO_URI = process.env.MONGO_URI;
+
+try {
+    mongoose.connect(MONGO_URI);
+} catch (error) {
+    console.log(error.message);
+    process.exit(0);
+}
+
+process.on('SIGINT', () => {
+    mongoose.connection.close();
+    process.exit(0);
+});
 
 const createUser = async function(userInfo) {
     const confirmationCode = generateSmsCode();
@@ -22,7 +37,7 @@ const createUser = async function(userInfo) {
 
         await newPendingUser.save();
     } catch (error) {
-
+        console.log(error);
         throw new Error(error.code);
     }
 }
@@ -44,21 +59,32 @@ const activateUser = async function (code) {
                 "transactions": []
             });
 
-            await newUser.save();
-            await PendingUser.deleteOne({"confirmationCode": code});
+            const session = await mongoose.connection.startSession();
 
+            try {
+                session.startTransaction();
+
+                await newUser.save({session});
+                await PendingUser.deleteOne({"confirmationCode": code}, {session});
+
+                session.commitTransaction();
+            } catch (error) {
+                session.abortTransaction();
+
+                throw new Error("Uh oh something went wrong");
+            } finally {
+                session.endSession();
+            }
         } else {
             const newCode = generateSmsCode();
-
-            
 
             pendingUser.confirmationCode = newCode;
             pendingUser.exp = Date.now() + CODE_EXP;
 
             await pendingUser.save();
 
-            mockSMS(newCode);
-            throw new Error("the code expired, a new one has been sent");
+            sendEmail(pendingUser.email, newCode);
+            throw new Error("the code expired, a new one has been sent to " + pendingUser.email);
         }
     
     } else {
@@ -69,10 +95,63 @@ const activateUser = async function (code) {
 }
 
 const getUser = async function (email) {
-    const user = await User.findById(email);
+    const user = await User.findById(email).populate("transactions").exec();
     
     return user;
 }
    
+const getTransactions = async function (email) {
+    const user = await getUser(email);
+    const transactions = user.transactions;
 
-export {createUser, activateUser, getUser};
+    return transactions;
+}
+
+const processTransaction = async function (transactionInfo) {
+    const {email, to, amount} = transactionInfo;
+
+    const sender = await getUser(email);
+    const receiver = await getUser(to);
+
+    console.log(sender);
+    console.log(receiver);
+
+    if (!sender || !receiver) {
+        throw new Error("Unknown user");
+    }
+    
+    const newTransaction = new Transaction({
+        from: email,
+        to,
+        amount
+    });
+
+    const session = await mongoose.connection.startSession();
+
+    try {
+        session.startTransaction();
+
+        await newTransaction.save({session});
+
+        sender.balance -= amount;
+        sender.transactions.push(newTransaction._id);
+        await sender.save({session});
+
+        receiver.balance += amount;
+        receiver.transactions.push(newTransaction._id);
+        await receiver.save({session});
+
+        await session.commitTransaction();
+        
+    } catch (error) {
+        console.log(error);
+
+        await session.abortTransaction();
+        throw new Error(error.message);
+    } finally {
+        session.endSession();
+    }
+    
+}
+
+export {createUser, activateUser, getUser, getTransactions, processTransaction};
