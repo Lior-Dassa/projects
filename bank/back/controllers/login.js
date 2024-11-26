@@ -13,10 +13,8 @@ let Login = async function(req, res) {
     }
      
     if (user != null && requestBody.password == user.password) {
-        res.cookie("access_token", generateAccessToken(email),{httpOnly: true});
-        res.cookie("refresh_token", generateRefreshToken(email),{httpOnly: true});
-
-        res.status(200).json({message: "Login was successfull"});
+        res.status(200).json({access_token: generateAccessToken(email),
+            refresh_token: generateRefreshToken(email)});
     } else {
         return res.status(400).json({"error" : "Bad request", "message" : "wrong email or password"});
     }

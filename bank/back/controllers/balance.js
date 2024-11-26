@@ -1,6 +1,3 @@
-import mockGetBalance from "./mocks/mock-get-balance.js";
-import getToken from "../utils/get-token.js";
-import {verifyAccessToken} from "../utils/jwt.js";
 import { getUser } from "../utils/database.js";
 
 const Balance = async function(req, res) {

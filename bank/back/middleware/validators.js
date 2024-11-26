@@ -35,18 +35,6 @@ const TransactionValidator = function (req, res, next) {
 
     const errors = validationResult(req);
 
-    if(!errors.isEmpty()) {
-        console.log(errors);
-    }
-
-    if (details.email == details.to) {
-        console.log("emails the same");
-    }
-    
-    if(details.amount < 0) {
-        console.log("amount less than 0");
-    }
-
     if (!validationResult(req).isEmpty() || details.email == details.to || details.amount <0) {
         return res.status(400).json({error: "Bad request", message : "Invalid input"});
     }

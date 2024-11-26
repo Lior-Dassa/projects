@@ -1,35 +1,22 @@
 import mongoose from "mongoose";
+import "./db-connection.js";
 import generateSmsCode from "../utils/generate-sms-code.js";
 import getRandomArbitrary from "./genrate-random-number.js";
 import { PendingUser , User, Transaction} from "./mongo-models.js";
 import {CODE_EXP} from "../utils/mongo-models.js"
 import sendEmail from "./send-email.js";
 
-const MONGO_URI = process.env.MONGO_URI;
-
-try {
-    mongoose.connect(MONGO_URI);
-} catch (error) {
-    console.log(error.message);
-    process.exit(0);
-}
-
-process.on('SIGINT', () => {
-    mongoose.connection.close();
-    process.exit(0);
-});
-
 const createUser = async function(userInfo) {
     const confirmationCode = generateSmsCode();
 
     if (await User.findById(userInfo.email)) {
-        throw new Error("11000");
+        throw new Error("EMAIL_EXISTS");
     }
 
     try {
         const newPendingUser = new PendingUser({
             _id: userInfo.email,
-            confirmationCode: userInfo.confirmationCode,
+            confirmationCode,
             password: userInfo.password,
             firstName: userInfo.firstName,
             lastName: userInfo.lastName
@@ -37,7 +24,6 @@ const createUser = async function(userInfo) {
 
         await newPendingUser.save();
     } catch (error) {
-        console.log(error);
         throw new Error(error.code);
     }
 }
@@ -67,7 +53,7 @@ const activateUser = async function (code) {
                 await newUser.save({session});
                 await PendingUser.deleteOne({"confirmationCode": code}, {session});
 
-                session.commitTransaction();
+                await session.commitTransaction();
             } catch (error) {
                 session.abortTransaction();
 
@@ -83,7 +69,7 @@ const activateUser = async function (code) {
 
             await pendingUser.save();
 
-            sendEmail(pendingUser.email, newCode);
+            sendEmail(pendingUser._id, newCode);
             throw new Error("the code expired, a new one has been sent to " + pendingUser.email);
         }
     
@@ -109,12 +95,10 @@ const getTransactions = async function (email) {
 
 const processTransaction = async function (transactionInfo) {
     const {email, to, amount} = transactionInfo;
+    amount = parseFloat(amount);
 
     const sender = await getUser(email);
     const receiver = await getUser(to);
-
-    console.log(sender);
-    console.log(receiver);
 
     if (!sender || !receiver) {
         throw new Error("Unknown user");
@@ -137,15 +121,13 @@ const processTransaction = async function (transactionInfo) {
         sender.transactions.push(newTransaction._id);
         await sender.save({session});
 
-        receiver.balance += amount;
+        receiver.balance = parseFloat(receiver.balance) + amount;
         receiver.transactions.push(newTransaction._id);
         await receiver.save({session});
 
         await session.commitTransaction();
         
     } catch (error) {
-        console.log(error);
-
         await session.abortTransaction();
         throw new Error(error.message);
     } finally {

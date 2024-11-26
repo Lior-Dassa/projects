@@ -16,6 +16,7 @@ let mailOptions = {
 };
 
 const sendEmail = function(email, code) {
+    console.log(email);
     mailOptions.to = email;
     mailOptions.text = baseText + code;
 

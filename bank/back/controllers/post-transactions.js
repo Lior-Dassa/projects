@@ -5,7 +5,7 @@ const postTransactions = async function(req, res) {
     try {
         await processTransaction(details);
     } catch (error) {
-        if (error.message == "Balance can not be negative") {
+        if (error.message.includes("Balance can not be negative")) {
             return res.status(400).json({error: "Bad request", message: "Insufficient funds"});
         } else if(error.message == "Unknown user") {
             return res.status(400).json({error: "Bad request", message: "Unknown receiver"});

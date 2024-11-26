@@ -10,13 +10,13 @@ let Signup = async function(req, res) {
     try {
         await createUser(userInfo);
     } catch (err) {
-        if (err.message == "11000") {
+        if (err.message == "EMAIL_EXISTS") {
             return res.status(409).json({"error" : "Conflict", "message" :
                  "a user with this email is already registered"});
         } else {
             console.log(err);
             return res.status(500).json({"error" : "Server error", "message" :
-                "oh oh something went wrong"});
+                "Uh oh something went wrong"});
         }
     }
 
