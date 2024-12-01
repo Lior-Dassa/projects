@@ -11,8 +11,8 @@ const Refresh = function(req, res) {
         return res.status(401).json({error: "Unautorized", message: error.message});
     }
 
-    res.status(200).json({access_token: generateAccessToken(email),
-        refresh_token: generateRefreshToken(email)});
+    res.status(200).json({accessToken: generateAccessToken(email),
+        refreshToken: generateRefreshToken(email)});
 }
 
 export default Refresh;

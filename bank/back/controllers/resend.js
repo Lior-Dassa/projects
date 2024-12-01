@@ -1,10 +1,12 @@
-import generateSmsCode from "../utils/generate-sms-code.js";
-import sendEmail from "../utils/send-email.js";
+import { resendCode } from "../utils/database.js";
 
-let Resend = function(req, res) {
-    let smsCode = generateSmsCode();
-
-    sendEmail(req.body.email, smsCode);
+let Resend = async function(req, res) {
+    try {
+        await resendCode(req.body.email);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({message: "Failed to resend code"});
+    }
 
     return res.status(200).json({message: "A new confirmation code was sent to " + req.body.email});
 }

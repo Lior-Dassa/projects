@@ -24,7 +24,11 @@ const createUser = async function(userInfo) {
 
         await newPendingUser.save();
     } catch (error) {
-        throw new Error(error.code);
+        if (error.code == 11000) {
+            throw new Error("EMAIL_EXISTS");
+        } else {
+            throw new Error(error.code);
+        }
     }
 }
 
@@ -62,15 +66,7 @@ const activateUser = async function (code) {
                 session.endSession();
             }
         } else {
-            const newCode = generateSmsCode();
-
-            pendingUser.confirmationCode = newCode;
-            pendingUser.exp = Date.now() + CODE_EXP;
-
-            await pendingUser.save();
-
-            sendEmail(pendingUser._id, newCode);
-            throw new Error("the code expired, a new one has been sent to " + pendingUser.email);
+            throw new Error("the code has expired");
         }
     
     } else {
@@ -78,6 +74,20 @@ const activateUser = async function (code) {
     }
 
     return pendingUser._id;
+}
+
+const resendCode = async function (email, pendingUser) {
+    const newCode = generateSmsCode();
+    let user = pendingUser;
+
+    if(!pendingUser) {
+        user = await PendingUser.findById(email);
+    }
+
+    user.confirmationCode = newCode;
+    user.exp = Date.now() + CODE_EXP;
+    await user.save();
+    await sendEmail(email, newCode);
 }
 
 const getUser = async function (email) {
@@ -136,4 +146,4 @@ const processTransaction = async function (transactionInfo) {
     
 }
 
-export {createUser, activateUser, getUser, getTransactions, processTransaction};
+export {createUser, activateUser, getUser, getTransactions, processTransaction, resendCode};

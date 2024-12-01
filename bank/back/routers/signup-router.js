@@ -9,7 +9,7 @@ import Resend from "../controllers/resend.js";
 const signupRouter = Router();
 
 const signUpValidators = [EmailValidator, PhoneValidator, NameValidator];
-const resendValidators = [EmailValidator, PhoneValidator];
+const resendValidators = [EmailValidator];
 
 signupRouter.post('/', signUpValidators, ValidationErrorSender, Signup);
 signupRouter.post('/confirmation', Confirmation);

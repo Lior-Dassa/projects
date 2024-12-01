@@ -13,8 +13,8 @@ let Login = async function(req, res) {
     }
      
     if (user != null && requestBody.password == user.password) {
-        res.status(200).json({access_token: generateAccessToken(email),
-            refresh_token: generateRefreshToken(email)});
+        res.status(200).json({accessToken: generateAccessToken(email),
+            refreshToken: generateRefreshToken(email)});
     } else {
         return res.status(400).json({"error" : "Bad request", "message" : "wrong email or password"});
     }
