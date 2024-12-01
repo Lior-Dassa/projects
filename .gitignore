@@ -6,6 +6,7 @@
 !*.html
 !*.css
 !*.js
+!*.jsx
 !*.json
 !*.md
 !*.h
