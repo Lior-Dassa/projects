@@ -19,7 +19,8 @@ const createUser = async function(userInfo) {
             confirmationCode,
             password: userInfo.password,
             firstName: userInfo.firstName,
-            lastName: userInfo.lastName
+            lastName: userInfo.lastName,
+            phoneNumber: userInfo.phoneNumber
         });
 
         await newPendingUser.save();
@@ -45,6 +46,7 @@ const activateUser = async function (code) {
                 "password": pendingUser.password,
                 "firstName": pendingUser.firstName,
                 "lastName": pendingUser.lastName,
+                "phoneNumber": pendingUser.phoneNumber,
                 "balance": getRandomArbitrary(1000, 1000000),
                 "transactions": []
             });

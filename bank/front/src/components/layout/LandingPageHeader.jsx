@@ -1,10 +1,10 @@
 import { useState } from 'react'
-import { Bell, Settings, LogIn , UserPlus2} from 'lucide-react'
+import {LogIn , UserPlus2} from 'lucide-react'
 import Modal from '../shared/Modal'
 import LoginForm from '../features/LoginForm'
 import SignUpForm from '../features/SignUpForm'
 
-export default function Header() {
+export default function LandingPageHeader({ setIsAuthenticated }) {
   const [isLoginOpen, setIsLoginOpen] = useState(false)
   const [isSignUpOpen, setIsSignUpOpen] = useState(false)
 
@@ -34,7 +34,7 @@ export default function Header() {
               isOpen={isLoginOpen} 
               onClose={() => setIsLoginOpen(false)}
             >
-              <LoginForm  onSwitchForms={switchForms}/>
+              <LoginForm  onSwitchForms={switchForms} setIsAuthenticated={setIsAuthenticated}/>
             </Modal>
             </div>
 

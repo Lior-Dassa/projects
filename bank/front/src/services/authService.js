@@ -11,7 +11,6 @@ axiosClient.interceptors.response.use(
     (response) => response,
     async (error) => {
       const message = error.response?.data?.message || 'An error occurred';
-      console.log('API Error:', message);
       return Promise.reject(new Error(message));
     }
 );
@@ -47,7 +46,7 @@ const authService = {
           const response = await axiosClient.post(API_ENDPOINTS.SIGNUP, userData);
           return response.data;
         } catch (error) {
-          console.log('Registration error:', error);
+          console.log('Registration error:', error.message);
           throw error;
         }
     },

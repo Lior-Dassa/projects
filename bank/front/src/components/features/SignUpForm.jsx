@@ -14,8 +14,8 @@ export default function SignUpForm({ onSwitchForms }) {
   })
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [registeredEmail, setRegisteredEmail] = useState('');
-
-  const [errors, setErrors] = useState({})
+  const [errors, setErrors] = useState({});
+  const { signup, isLoading , apiError } = useAuth();
 
   const validateForm = () => {
     const newErrors = {}
@@ -57,7 +57,31 @@ export default function SignUpForm({ onSwitchForms }) {
     return Object.keys(newErrors).length === 0
   }
 
-  const { signup, isLoading, error } = useAuth();
+  const handleSignUpError = () => {
+    for (const errorMessage of apiError) {
+      if (errorMessage.includes('email')) {
+        setErrors(prev => ({
+          ...prev,
+          email: errorMessage
+        }))
+      } else if (errorMessage.includes('phone')) {
+        setErrors(prev => ({
+          ...prev,
+          phoneNumber: errorMessage
+        }))
+      } else if (errorMessage.includes('first')) {
+        setErrors(prev => ({
+          ...prev,
+          firstName: errorMessage
+        }))
+      } else if (errorMessage.includes('last')) {
+        setErrors(prev => ({
+          ...prev,
+          lastName: errorMessage
+        }))
+      }
+    }
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -68,12 +92,8 @@ export default function SignUpForm({ onSwitchForms }) {
         setShowConfirmation(true);
         setRegisteredEmail(formData.email);
       } catch (error) {
-        setErrors(prev => ({
-            ...prev,
-            email: error.message
-        }))
-        console.error('Submission error:', error)
-      }                                                                                                     
+        handleSignUpError();
+      }
     } else {
       const firstError = document.querySelector('.error-message')
       firstError?.scrollIntoView({ behavior: 'smooth', block: 'center' })
@@ -86,19 +106,21 @@ export default function SignUpForm({ onSwitchForms }) {
       ...prev,
       [name]: value
     }))
+  }
 
-    if (errors[name]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: ''
-      }))
-    }
+  const handleFocus = (e) => {
+    e.target.classList.remove('border-red-500', 'bg-red-50');
+    setErrors(prev => ({
+      ...prev,
+      [e.target.name]: ''
+    }));
   }
 
   if (showConfirmation) {
     return (
       <ConfirmationCodeForm 
         email={registeredEmail}
+        onSwitchForms={onSwitchForms}
       />
     );
   }
@@ -127,6 +149,7 @@ export default function SignUpForm({ onSwitchForms }) {
               name="firstName"
               value={formData.firstName}
               onChange={handleChange}
+              onFocus={handleFocus}
               required
               className={`block w-full pl-10 pr-3 py-3 border rounded-md text-sm focus:ring-blue-500 focus:border-blue-500 
                 ${errors.firstName ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
@@ -154,6 +177,7 @@ export default function SignUpForm({ onSwitchForms }) {
               name="lastName"
               value={formData.lastName}
               onChange={handleChange}
+              onFocus={handleFocus}
               required
               className={`block w-full pl-10 pr-3 py-3 border rounded-md text-sm focus:ring-blue-500 focus:border-blue-500 
                 ${errors.lastName ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
@@ -181,6 +205,7 @@ export default function SignUpForm({ onSwitchForms }) {
               name="phoneNumber"
               value={formData.phoneNumber}
               onChange={handleChange}
+              onFocus={handleFocus}
               required
               className={`block w-full pl-10 pr-3 py-3 border rounded-md text-sm focus:ring-blue-500 focus:border-blue-500 
                 ${errors.phoneNumber ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
@@ -208,6 +233,7 @@ export default function SignUpForm({ onSwitchForms }) {
               name="email"
               value={formData.email}
               onChange={handleChange}
+              onFocus={handleFocus}
               required
               className={`block w-full pl-10 pr-3 py-3 border rounded-md text-sm focus:ring-blue-500 focus:border-blue-500 
                 ${errors.email ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
@@ -235,6 +261,7 @@ export default function SignUpForm({ onSwitchForms }) {
               name="password"
               value={formData.password}
               onChange={handleChange}
+              onFocus={handleFocus}
               required
               className={`block w-full pl-10 pr-10 py-3 border rounded-md text-sm focus:ring-blue-500 focus:border-blue-500 
                 ${errors.password ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}

@@ -1,32 +1,17 @@
-import Header from './components/layout/Header'
-import TransactionTable from './components/features/TransactionTable'
-import landing_page from './assets/landing_page.png'
-
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import LandingPage from './pages/LandingPage.jsx';
+import Dashboard from './pages/Dashboard.jsx';
+import { useAuth} from './hooks/useAuth.js';
+import { useState } from 'react';
 export default function App() {
+  const [isConnected, setIsConnected] = useState(useAuth.isAuthenticated());
+
   return (
-    <main className="min-h-screen bg-blue-50">
-      <Header />
-      
-      <section className="max-w-7xl mx-auto px-4 py-12">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">
-            Welcome to Digital Banking
-          </h2>
-          <p className="text-xl text-gray-600">
-            Manage your account and transfer money to your friends!
-          </p>
-        </div>
-
-        <div className="mb-12">
-          <img
-            src={landing_page}
-            alt="Banking Hero"
-            className="rounded-xl shadow-lg w-full"
-          />
-        </div>
-
-        <TransactionTable />
-      </section>
-    </main>
+    <Router>
+      <Routes>
+        <Route path="/" element={isConnected ? <Navigate to="/dashboard" /> : <LandingPage setIsConnected={setIsConnected} />} />
+        <Route path="/dashboard" element={isConnected ? <Dashboard /> : <Navigate to="/" />} />
+      </Routes>
+    </Router>
   )
 }

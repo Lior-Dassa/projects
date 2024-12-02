@@ -18,6 +18,7 @@ const userSchema = new mongoose.Schema({
     "password": String,
     "firstName": String,
     "lastName": String,
+    "phoneNumber": String,
     "balance": {
         type: mongoose.Schema.Types.Decimal128,
         validate: {
@@ -37,6 +38,7 @@ const pendingUserSchema = new mongoose.Schema({
     "password": String,
     "firstName": String,
     "lastName": String,
+    "phoneNumber": String,
     "confirmationCode": String,
     "exp": {
         type: Date,

@@ -1,18 +1,19 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import authService from '../services/authService';
 
 export function useAuth() {
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
-
+  const [apiError, setApiError] = useState();
+  
   const login = async (email, password) => {
     try {
       setIsLoading(true);
-      setError(null);
+      setApiError(null);
       const result = await authService.login(email, password);
+      setIsAuthenticated(true);
       return result;
     } catch (err) {
-      setError(err.message);
+      setApiError(parseError(err.message));
       throw err;
     } finally {
       setIsLoading(false);
@@ -21,6 +22,7 @@ export function useAuth() {
 
   const logout = () => {
     authService.logout();
+    setIsAuthenticated(false);
   };
   
   const signup = async (userData) => {
@@ -28,7 +30,7 @@ export function useAuth() {
       const result = await authService.signup(userData);
       return result;
     } catch (err) {
-      setError(err.message);
+      setApiError(parseError(err.message));
       throw err;
     }
   }
@@ -38,7 +40,7 @@ export function useAuth() {
       const result = await authService.confirmSignup(passcode);
       return result;
     } catch (err) {
-      setError(err.message);
+      setApiError(err.message);
       throw err;
     }
   }
@@ -48,7 +50,7 @@ export function useAuth() {
       const result = await authService.resendConfirmation(email);
       return result;
     } catch (err) {
-      setError(err.message);
+      setApiError(err.message);
       throw err;
     }
   }
@@ -58,17 +60,25 @@ export function useAuth() {
       const result = await authService.refreshToken();
       return result;
     } catch (err) {
-      setError(err.message);
+      setApiError(err.message);
       throw err;
     }
+  }
+
+  const parseError = (error) => {
+    return error.split(',');
+  }
+
+  const isAuthenticated = function () {
+    return authService.isAuthenticated();
   }
 
   return {
     login,
     logout,
     isLoading,
-    error,
-    isAuthenticated: authService.isAuthenticated,
+    apiError,
+    isAuthenticated,
     signup,
     confirmSignup,
     resendConfirmation,
