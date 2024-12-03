@@ -1,6 +1,6 @@
 import {body, validationResult} from 'express-validator';
 import getToken from '../utils/get-token.js';
-import {verifyAccessToken} from '../utils/jwt.js';
+import {verifyAccessToken, verifyRefreshToken} from '../utils/jwt.js';
 
 const NameValidator = [body('firstName').isAlpha().withMessage('first name should include only letters')
     .isLength({min: 1, max: 20}).withMessage('first name should be 1-20 letters'),
@@ -30,17 +30,17 @@ const AccessTokenValidator = function (req, res, next) {
     next();
 }
 
-const TransactionValidator = function (req, res, next) {
-    const details = req.body;
+const RefreshTokenValidator = function (req, res, next) {
+    const token = getToken(req);
 
-    const errors = validationResult(req);
-
-    if (!validationResult(req).isEmpty() || details.email == details.to || details.amount <0) {
-        return res.status(400).json({error: "Bad request", message : "Invalid input"});
+    try {
+        req.body.email = verifyRefreshToken(token);
+    } catch (error) {
+        return res.status(401).json({error: "Unauthorized", message : error.message});
     }
-    
+
     next();
 }
 
 export {NameValidator, PhoneValidator, EmailValidator, ToValidator, AmountValidator,
-            AccessTokenValidator, TransactionValidator};
+            AccessTokenValidator, RefreshTokenValidator};

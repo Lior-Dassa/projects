@@ -4,7 +4,7 @@ import { Mail, Lock, Eye, EyeOff } from 'lucide-react'
 import { useAuth } from '../../hooks/useAuth.js'
 import { useNavigate } from 'react-router-dom';
 
-export default function LoginForm({ onSwitchForms , setIsAuthenticated}) {
+export default function LoginForm({ onSwitchForms , setIsConnected}) {
   const [showPassword, setShowPassword] = useState(false)
   const [formData, setFormData] = useState({
     email: '',
@@ -44,7 +44,7 @@ export default function LoginForm({ onSwitchForms , setIsAuthenticated}) {
     if (validateForm()) {
       try {
         await login(formData.email, formData.password);
-        setIsAuthenticated(true);
+        setIsConnected(true);
       } catch (error) {
         setApiError(error.message);
         setIsLoginError(true);

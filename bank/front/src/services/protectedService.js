@@ -3,12 +3,12 @@ import { API_ENDPOINTS , API_CONFIG } from '../config/api';
 import authService from './authService';
 
 const axiosClient = axios.create({
-    baseURL: API_ENDPOINTS.API_BASE_URL,
+    baseURL: API_ENDPOINTS.BASE_URL,
     headers: API_CONFIG.headers
 });
 
 axiosClient.interceptors.request.use(
-    (config) => {
+    (config) => {        
       const token = localStorage.getItem('accessToken');
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
@@ -29,7 +29,7 @@ axiosClient.interceptors.response.use(
         originalRequest._retry = true;
   
         try {
-          await authService.refreshToken();
+          await authService.refreshToken(); 
           return axiosClient(originalRequest);
         } catch (refreshError) {
           authService.logout();
@@ -46,6 +46,11 @@ axiosClient.interceptors.response.use(
 const protectedService = {
     getUser: async () => {
         const response = await axiosClient.get(API_ENDPOINTS.USER);
+        return response.data;
+    },
+
+    postTransaction: async (transaction) => {
+        const response = await axiosClient.post(API_ENDPOINTS.TRANSACTIONS, transaction);
         return response.data;
     }
 }

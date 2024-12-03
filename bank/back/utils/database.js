@@ -107,7 +107,7 @@ const getTransactions = async function (email) {
 
 const processTransaction = async function (transactionInfo) {
     const {email, to, amount} = transactionInfo;
-    amount = parseFloat(amount);
+    const parsedAmount = parseFloat(amount);
 
     const sender = await getUser(email);
     const receiver = await getUser(to);
@@ -119,7 +119,7 @@ const processTransaction = async function (transactionInfo) {
     const newTransaction = new Transaction({
         from: email,
         to,
-        amount
+        amount: parsedAmount
     });
 
     const session = await mongoose.connection.startSession();
@@ -129,11 +129,11 @@ const processTransaction = async function (transactionInfo) {
 
         await newTransaction.save({session});
 
-        sender.balance -= amount;
+        sender.balance -= parsedAmount;
         sender.transactions.push(newTransaction._id);
         await sender.save({session});
 
-        receiver.balance = parseFloat(receiver.balance) + amount;
+        receiver.balance = parseFloat(receiver.balance) + parsedAmount;
         receiver.transactions.push(newTransaction._id);
         await receiver.save({session});
 

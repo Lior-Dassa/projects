@@ -1,11 +1,10 @@
-import { useNavigate } from 'react-router-dom';
 import LandingPageHeader from '../components/layout/LandingPageHeader.jsx'
 import landing_page from '../assets/landing_page.png'
 
-const LandingPage = ({ setIsAuthenticated }) => {
+const LandingPage = ({ setIsConnected }) => {
   return (
     <main className="min-h-screen bg-blue-50">
-      <LandingPageHeader setIsAuthenticated={setIsAuthenticated}/>
+      <LandingPageHeader setIsConnected={setIsConnected}/>
       
       <section className="max-w-7xl mx-auto px-4 py-12">
         <div className="text-center mb-12">

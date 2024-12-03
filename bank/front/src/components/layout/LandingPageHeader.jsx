@@ -4,7 +4,7 @@ import Modal from '../shared/Modal'
 import LoginForm from '../features/LoginForm'
 import SignUpForm from '../features/SignUpForm'
 
-export default function LandingPageHeader({ setIsAuthenticated }) {
+export default function LandingPageHeader({ setIsConnected }) {
   const [isLoginOpen, setIsLoginOpen] = useState(false)
   const [isSignUpOpen, setIsSignUpOpen] = useState(false)
 
@@ -34,7 +34,7 @@ export default function LandingPageHeader({ setIsAuthenticated }) {
               isOpen={isLoginOpen} 
               onClose={() => setIsLoginOpen(false)}
             >
-              <LoginForm  onSwitchForms={switchForms} setIsAuthenticated={setIsAuthenticated}/>
+              <LoginForm  onSwitchForms={switchForms} setIsConnected={setIsConnected}/>
             </Modal>
             </div>
 

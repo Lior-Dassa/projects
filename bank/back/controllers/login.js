@@ -1,7 +1,7 @@
 import { getUser } from "../utils/database.js";
 import {generateRefreshToken, generateAccessToken} from "../utils/jwt.js";
 
-let Login = async function(req, res) {
+const Login = async function(req, res) {
     const requestBody = req.body;
     const email = requestBody.email;
     let user = null;

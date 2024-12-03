@@ -79,9 +79,12 @@ const authService = {
         try {
           const refreshToken = localStorage.getItem('refreshToken');
           if (!refreshToken) throw new Error('No refresh token available');
+
     
-          const response = await axiosClient.post(API_ENDPOINTS.REFRESH_TOKEN, {
-            refreshToken
+          const response = await axiosClient.get(API_ENDPOINTS.REFRESH_TOKEN, {
+            headers: {
+              Authorization: `Bearer ${refreshToken}`
+            }
           });
     
           const { accessToken, newRefreshToken } = response.data;

@@ -9,6 +9,7 @@ export const API_ENDPOINTS = {
   RESEND_CONFIRMATION: `/signup/resend`,
   REFRESH_TOKEN: `/refresh`,
   USER: `/user`,
+  TRANSACTIONS: `/user/transactions`,
 }
 
 // API configuration

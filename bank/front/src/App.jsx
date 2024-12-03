@@ -4,7 +4,8 @@ import Dashboard from './pages/Dashboard.jsx';
 import { useAuth} from './hooks/useAuth.js';
 import { useState } from 'react';
 export default function App() {
-  const [isConnected, setIsConnected] = useState(useAuth.isAuthenticated());
+  const { isAuthenticated } = useAuth();
+  const [isConnected, setIsConnected] = useState(isAuthenticated());
 
   return (
     <Router>

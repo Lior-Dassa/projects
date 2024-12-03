@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import authService from '../services/authService';
-
+import parseError from '../utils/error-parser.js';
 export function useAuth() {
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState();
@@ -10,7 +10,6 @@ export function useAuth() {
       setIsLoading(true);
       setApiError(null);
       const result = await authService.login(email, password);
-      setIsAuthenticated(true);
       return result;
     } catch (err) {
       setApiError(parseError(err.message));
@@ -22,7 +21,6 @@ export function useAuth() {
 
   const logout = () => {
     authService.logout();
-    setIsAuthenticated(false);
   };
   
   const signup = async (userData) => {
@@ -65,9 +63,6 @@ export function useAuth() {
     }
   }
 
-  const parseError = (error) => {
-    return error.split(',');
-  }
 
   const isAuthenticated = function () {
     return authService.isAuthenticated();
