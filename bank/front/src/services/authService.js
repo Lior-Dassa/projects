@@ -94,7 +94,6 @@ const authService = {
           return response.data;
         } catch (error) {
           console.log('Token refresh error:', error);
-          authService.logout();
           throw error;
         }
     }

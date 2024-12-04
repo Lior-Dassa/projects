@@ -1,7 +1,6 @@
 import { processTransaction } from "../utils/database.js";
 const postTransactions = async function(req, res) {
     const details = req.body;
-    console.log(details);
 
     try {
         await processTransaction(details);

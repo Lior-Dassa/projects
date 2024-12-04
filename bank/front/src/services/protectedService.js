@@ -32,14 +32,13 @@ axiosClient.interceptors.response.use(
           await authService.refreshToken(); 
           return axiosClient(originalRequest);
         } catch (refreshError) {
-          authService.logout();
           throw refreshError;
         }
       }
   
       const message = error.response?.data?.message || 'An error occurred';
       console.error('API Error:', message);
-      return Promise.reject(new Error(message));
+      throw new Error(message);
     }
 );
 
@@ -52,6 +51,11 @@ const protectedService = {
     postTransaction: async (transaction) => {
         const response = await axiosClient.post(API_ENDPOINTS.TRANSACTIONS, transaction);
         return response.data;
+    },
+
+    getBalance: async () => {
+        const response = await axiosClient.get(API_ENDPOINTS.BALANCE);
+        return response.data.balance;
     }
 }
 

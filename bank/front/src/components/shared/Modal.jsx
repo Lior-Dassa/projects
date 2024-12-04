@@ -9,7 +9,7 @@ export default function Modal({ isOpen, onClose, children }) {
       />
       
       <div 
-        className="absolute top-20 right-4 w-[420px] bg-white rounded-lg shadow-xl z-50 border border-gray-200" /* Increased from w-96 (384px) to w-[420px] */
+        className="absolute top-20 right-4 w-[420px] bg-white rounded-lg shadow-xl z-50 border border-gray-200" 
         onClick={e => e.stopPropagation()}
       >
         <div className="absolute -top-2 right-12 w-4 h-4 bg-white border-t border-l border-gray-200 transform rotate-45" />

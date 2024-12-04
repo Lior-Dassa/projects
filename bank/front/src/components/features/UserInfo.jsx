@@ -1,7 +1,9 @@
 import formatCurrency from "../../utils/currency-parser.js";
 
-export default function UserInfo({ isLoading, apiError, userInfo }) {
-    
+export default function UserInfo({ isLoading, isBalanceLoading, apiError, userInfo }) {
+    const { firstName, lastName, _id, balance, phoneNumber } = userInfo || {};
+    const balanceAmount = balance ? formatCurrency(balance) : formatCurrency(0);
+
     if (isLoading) {
       return (
         <div className="w-full max-w-4xl mx-auto mt-8 p-4">
@@ -15,19 +17,6 @@ export default function UserInfo({ isLoading, apiError, userInfo }) {
         </div>
       );
     }
-  
-    if (apiError) {
-      return (
-        <div className="w-full max-w-4xl mx-auto mt-8 p-4">
-          <div className="text-red-600 text-center">
-            Error loading user information: {apiError}
-          </div>
-        </div>
-      );
-    }
-  
-    const { firstName, lastName, _id, balance, phoneNumber } = userInfo || {};
-    const balanceAmount = balance ? formatCurrency(balance) : formatCurrency(0);
 
     return (
       <div className="w-full max-w-4xl mx-auto mt-8">
@@ -41,14 +30,20 @@ export default function UserInfo({ isLoading, apiError, userInfo }) {
                 <p className="text-sm text-gray-600">Phone Number: <span className="text-gray-900">{phoneNumber}</span></p>
               </div>
             </div>
-            <div>
+            <div>                
               <h3 className="text-lg font-semibold text-gray-900">Balance</h3>
               <div className="mt-4">
-                <p className="text-3xl font-bold text-blue-600">{balanceAmount}</p>
+                {isBalanceLoading ? (
+                  <div className="animate-pulse">
+                    <div className="h-8 bg-gray-200 rounded w-32"></div>
+                  </div>
+                ) : (
+                  <p className="text-3xl font-bold text-blue-600">{balanceAmount}</p>
+                )}
               </div>
             </div>
           </div>
         </div>
       </div>
     );
-  }
+}

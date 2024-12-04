@@ -10,6 +10,7 @@ export const API_ENDPOINTS = {
   REFRESH_TOKEN: `/refresh`,
   USER: `/user`,
   TRANSACTIONS: `/user/transactions`,
+  BALANCE: `/user/balance`,
 }
 
 // API configuration

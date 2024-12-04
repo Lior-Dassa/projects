@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import useProtected from '../../hooks/useProtected';
+import parseError from '../../utils/error-parser.js';
 
 export default function TransactionForm({ onSubmit }) {
   const [formData, setFormData] = useState({
@@ -7,8 +8,10 @@ export default function TransactionForm({ onSubmit }) {
     amount: ''
   });
 
-  const [errors, setErrors] = useState({});
-  const { apiError, setApiError } = useProtected();
+  const [errors, setErrors] = useState({
+    to: '',
+    amount: ''
+  });
 
   const validateForm = () => {
     const newErrors = {}
@@ -25,6 +28,8 @@ export default function TransactionForm({ onSubmit }) {
       newErrors.amount = 'Amount is required'
     } else if (isNaN(parseFloat(formData.amount))) {
       newErrors.amount = 'Amount must be a number'
+    } else if (parseFloat(formData.amount) <= 0) {
+      newErrors.amount = 'Amount must be greater than 0'
     }
 
     setErrors(newErrors)
@@ -32,22 +37,25 @@ export default function TransactionForm({ onSubmit }) {
   }
 
   const handleChange = (e) => {
-    setApiError(null);
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: value
     }));
+    setErrors(prev => ({
+        ...prev,
+        [name]: ''
+    }));
   };
 
-  const handleTransactionError = () => {
-    for (const errorMessage of apiError) {
+  const handleTransactionError = (errors) => {
+    for (const errorMessage of errors) {
         if (errorMessage.includes('recipient')) {
           setErrors(prev => ({
             ...prev,
             to: errorMessage
           }))
-        } else if (errorMessage.includes('amount')) {
+        } else if (errorMessage.includes('amount') || errorMessage.includes('funds')) {
           setErrors(prev => ({
             ...prev,
             amount: errorMessage
@@ -69,14 +77,14 @@ export default function TransactionForm({ onSubmit }) {
 
     if (validateForm()) {
       try {
-        onSubmit(formData);
-        setFormData({ to: '', amount: '' });
+        await onSubmit(formData);
       } catch (error) {
-        setApiError(error.message);
-        console.log(apiError);
-        handleTransactionError();
+        console.log("from transaction form", error.message);
+        handleTransactionError(parseError(error.message));
+      } finally {
+        setFormData({ to: '', amount: '' });
       }
-    }else {
+    } else {
       const firstError = document.querySelector('.error-message')
       firstError?.scrollIntoView({ behavior: 'smooth', block: 'center' })
     }

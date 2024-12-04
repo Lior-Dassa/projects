@@ -1,10 +1,20 @@
 import LandingPageHeader from '../components/layout/LandingPageHeader.jsx'
 import landing_page from '../assets/landing_page.png'
+import PopUp from '../components/shared/PopUp.jsx'
 
-const LandingPage = ({ setIsConnected }) => {
+import LoggedOutMessage from '../components/features/LoggedOutMessage.jsx'
+
+const LandingPage = ({ setIsConnected, isLoggedOut, setIsLoggedOut }) => {
+
   return (
     <main className="min-h-screen bg-blue-50">
       <LandingPageHeader setIsConnected={setIsConnected}/>
+
+      {isLoggedOut && (
+        <PopUp isOpen={isLoggedOut} onClose={() => setIsLoggedOut(false)}>
+          <LoggedOutMessage />
+        </PopUp>
+      )}
       
       <section className="max-w-7xl mx-auto px-4 py-12">
         <div className="text-center mb-12">

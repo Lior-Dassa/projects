@@ -18,9 +18,9 @@ const ToValidator = body('to').isEmail().withMessage('to is not an email');
 const AmountValidator = body('amount').isNumeric().withMessage('amount is not a number');
 
 const AccessTokenValidator = function (req, res, next) {
-    const token = getToken(req);
 
     try {
+        const token = getToken(req);
         req.body.email = verifyAccessToken(token);
         
     } catch (error) {
@@ -31,9 +31,9 @@ const AccessTokenValidator = function (req, res, next) {
 }
 
 const RefreshTokenValidator = function (req, res, next) {
-    const token = getToken(req);
 
     try {
+        const token = getToken(req);
         req.body.email = verifyRefreshToken(token);
     } catch (error) {
         return res.status(401).json({error: "Unauthorized", message : error.message});

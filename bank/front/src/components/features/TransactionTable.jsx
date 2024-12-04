@@ -14,38 +14,10 @@ export default function TransactionTable({ isLoading, apiError, transactions , e
     return direction * (new Date(b.createdAt) - new Date(a.createdAt));
   });
 
-  if (isLoading) {
-    return (
-      <div className="w-full max-w-4xl mx-auto mt-8 p-4">
-        <div className="animate-pulse">
-          <div className="h-10 bg-gray-200 rounded mb-4"></div>
-          <div className="space-y-3">
-            {[...Array(5)].map((_, index) => (
-              <div key={index} className="h-16 bg-gray-200 rounded"></div>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (apiError) {
-    return (
-      <div className="w-full max-w-4xl mx-auto mt-8 p-4">
-        <div className="text-red-600 text-center">
-          Error loading transactions: {apiError}
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="w-full max-w-4xl mx-auto mt-8 overflow-x-auto">
-      {transactions.length === 0 ? (
-        <div className="text-center text-gray-500 py-8">
-          No transactions found
-        </div>
-      ) : (
+      
         <table className="w-full bg-white rounded-lg shadow">
           <thead className="bg-blue-600 text-white">
             <tr>
@@ -66,19 +38,36 @@ export default function TransactionTable({ isLoading, apiError, transactions , e
             </tr>
           </thead>
           <tbody>
-            {sortedTransactions.map((tx) => (
-              <tr key={tx.id} className="border-b hover:bg-gray-50">
+          {isLoading ? (
+            <tr>
+              <td colSpan="4" className="text-center py-8">
+                <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]">
+                  <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
+                    Loading...
+                  </span>
+                </div>
+              </td>
+            </tr>
+          ) : transactions.length === 0 ? (
+            <tr>
+              <td colSpan="4" className="text-center text-gray-500 py-8">
+                No transactions found
+              </td>
+            </tr>
+          ) : (
+            sortedTransactions.map((tx) => (
+              <tr key={tx._id} className="border-b hover:bg-gray-50">
                 <td className="px-6 py-4">{tx.from}</td>
                 <td className="px-6 py-4">{tx.to}</td>
-                <td className={`px-6 py-4 ${tx.to == email ? 'text-green-600' : 'text-red-600'}`}>
+                <td className={`px-6 py-4 ${tx.to === email ? 'text-green-600' : 'text-red-600'}`}>
                   {formatCurrency(tx.amount)}
                 </td>
                 <td className="px-6 py-4">{formatDate(tx.createdAt)}</td>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+            ))
+          )}
+        </tbody>
+      </table>  
     </div>
   );
 }

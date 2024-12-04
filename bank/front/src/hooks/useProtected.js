@@ -7,6 +7,7 @@ export default function useProtected() {
     const [userInfo, setUserInfo] = useState(null);
     const [isTransactionsLoading, setIsTransactionsLoading] = useState(false);
     const [isUserInfoLoading, setIsUserInfoLoading] = useState(false);
+    const [isBalanceLoading, setIsBalanceLoading] = useState(false);
     const [apiError, setApiError] = useState(null);
   
     const fetchTransactions = async () => {
@@ -33,14 +34,27 @@ export default function useProtected() {
       }
     };
 
+    const fetchBalance = async () => {
+      try {
+        setIsBalanceLoading(true);
+        const balance = await protectedService.getBalance();
+        console.log(balance);
+        setUserInfo({...userInfo, balance});
+      } catch (error) {
+        setApiError(parseError(error.message));
+      } finally {
+        setIsBalanceLoading(false);
+      }
+    }
+
     const postTransaction = async (transaction) => {
       try {
         await protectedService.postTransaction(transaction);
         setIsTransactionsLoading(true);
-        setIsUserInfoLoading(true);
+        setIsBalanceLoading(true);
       } catch (error) {
-        console.log(error);
         setApiError(parseError(error.message));
+        throw error;
       }
     };
   
@@ -49,10 +63,12 @@ export default function useProtected() {
       userInfo,
       isTransactionsLoading,
       isUserInfoLoading,
+      isBalanceLoading,
       apiError,
       setApiError,
       fetchTransactions,
       fetchUserInfo,
+      fetchBalance,
       postTransaction
     };
   }
