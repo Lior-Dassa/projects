@@ -14,6 +14,7 @@ export default function Dashboard({setIsConnected, setIsLoggedOut}) {
     const { 
         transactions, 
         userInfo, 
+        balance,
         isTransactionsLoading, 
         isUserInfoLoading,
         isBalanceLoading,
@@ -64,6 +65,7 @@ export default function Dashboard({setIsConnected, setIsLoggedOut}) {
           isBalanceLoading={isBalanceLoading}
           apiError={apiError}
           userInfo={userInfo}
+          balance={balance}
         />
 
         <TransactionForm onSubmit={handleTransactionSubmit} />
@@ -72,7 +74,7 @@ export default function Dashboard({setIsConnected, setIsLoggedOut}) {
           isLoading={isTransactionsLoading}
           apiError={apiError}
           transactions={transactions}
-          email={userInfo?._id}
+          email={userInfo?.email}
         />
       </div>
     </main>

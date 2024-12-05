@@ -42,10 +42,6 @@ export default function TransactionForm({ onSubmit }) {
       ...prev,
       [name]: value
     }));
-    setErrors(prev => ({
-        ...prev,
-        [name]: ''
-    }));
   };
 
   const handleTransactionError = (errors) => {
@@ -92,8 +88,8 @@ export default function TransactionForm({ onSubmit }) {
 
 
   return (
-    <div className="w-full max-w-4xl mx-auto bg-white rounded-lg shadow p-4 mb-6 mt-6"> {/* Changed from max-w-md to max-w-2xl */}
-    <h3 className="text-md font-semibold text-gray-900 mb-3">Make a Transaction</h3> 
+    <div className="w-full max-w-4xl mx-auto bg-white rounded-lg shadow p-4 mb-6 mt-8"> {/* Changed from max-w-md to max-w-2xl */}
+    <h3 className="text-lg font-semibold text-gray-900 mb-4">Make a Transaction</h3> 
     <form onSubmit={handleSubmit}> 
       <div className="flex gap-4"> 
         <div className="flex flex-col w-[55%]"> 

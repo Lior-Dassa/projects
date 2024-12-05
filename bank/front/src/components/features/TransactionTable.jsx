@@ -1,73 +1,108 @@
-import { ArrowUpDown } from 'lucide-react';
-import { useState } from 'react';
+import { DataGrid } from '@mui/x-data-grid';
 import formatCurrency from "../../utils/currency-parser.js";
 import formatDate from "../../utils/date-parser.js";
-export default function TransactionTable({ isLoading, apiError, transactions , email  }) {
-  const [sortDirection, setSortDirection] = useState('asc');
 
-  const handleDateSort = () => {
-    setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
-  };
+export default function TransactionTable({ isLoading, apiError, transactions, email }) {
+  const columns = [
+    { 
+      field: 'from', 
+      headerName: 'From', 
+      flex: 1,
+      minWidth: 130,
+    },
+    { 
+      field: 'to', 
+      headerName: 'To', 
+      flex: 1,
+      minWidth: 130,
+    },
+    { 
+      field: 'amount', 
+      headerName: 'Amount', 
+      flex: 1,
+      minWidth: 100,
+      renderCell: (params) => (
+        <span className={params.row.to === email ? 'text-green-600' : 'text-red-600'}>
+          {formatCurrency(params.value)}
+        </span>
+      ),
+    },
+    { 
+      field: 'createdAt', 
+      headerName: 'Date', 
+      flex: 1,
+      minWidth: 130,
+    },
+  ];
 
-  const sortedTransactions = [...transactions].sort((a, b) => {
-    const direction = sortDirection === 'asc' ? 1 : -1;
-    return direction * (new Date(b.createdAt) - new Date(a.createdAt));
-  });
-
+  const rows = transactions.map((tx) => ({
+    id: tx._id,
+    ...tx
+  }));
 
   return (
-    <div className="w-full max-w-4xl mx-auto mt-8 overflow-x-auto">
-      
-        <table className="w-full bg-white rounded-lg shadow">
-          <thead className="bg-blue-600 text-white">
-            <tr>
-              <th className="px-6 py-3 text-left flex items-center gap-2">
-                From 
-              </th>
-              <th className="px-6 py-3 text-left">To</th>
-              <th className="px-6 py-3 text-left">Amount</th>
-              <th 
-                className="px-6 py-3 text-left cursor-pointer hover:bg-blue-700"
-                onClick={handleDateSort}
-              >
-                <div className="flex items-center gap-2">
-                  Date
-                  <ArrowUpDown className="w-4 h-4" />
-                </div>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-          {isLoading ? (
-            <tr>
-              <td colSpan="4" className="text-center py-8">
-                <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]">
-                  <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
-                    Loading...
-                  </span>
-                </div>
-              </td>
-            </tr>
-          ) : transactions.length === 0 ? (
-            <tr>
-              <td colSpan="4" className="text-center text-gray-500 py-8">
-                No transactions found
-              </td>
-            </tr>
-          ) : (
-            sortedTransactions.map((tx) => (
-              <tr key={tx._id} className="border-b hover:bg-gray-50">
-                <td className="px-6 py-4">{tx.from}</td>
-                <td className="px-6 py-4">{tx.to}</td>
-                <td className={`px-6 py-4 ${tx.to === email ? 'text-green-600' : 'text-red-600'}`}>
-                  {formatCurrency(tx.amount)}
-                </td>
-                <td className="px-6 py-4">{formatDate(tx.createdAt)}</td>
-              </tr>
-            ))
-          )}
-        </tbody>
-      </table>  
+    <div>
+    <div className="max-w-4xl mx-auto mt-6">
+      <h2 className="text-xl font-bold text-gray-900 mb-2">Transaction History</h2>
+    </div>
+      <div className="w-full max-w-4xl mx-auto mt-2 bg-white rounded-lg shadow overflow-hidden">
+      <DataGrid
+        rows={rows}
+        columns={columns}
+        loading={isLoading}
+        disableRowSelectionOnClick
+        initialState={{
+          sorting: {
+            sortModel: [{ field: 'createdAt', sort: 'desc' }],
+          }, 
+          pagination: {
+            paginationModel: { pageSize: 10, page: 0 },
+          }
+        }}
+        pageSizeOptions={[10,25,50,100, { value: -1, label: 'All' }]}
+        sx={{
+          border: 'none',
+          "& .MuiDataGrid-root": {
+            border: "none",
+          },
+          "& .MuiDataGrid-main": {
+            border: "none",
+          },
+          "& .MuiDataGrid-columnHeaders": {
+            backgroundColor: "rgb(37, 99, 235) !important",
+            color: "white",
+            fontSize: "0.875rem",
+            borderTopLeftRadius: "0.5rem",
+            borderTopRightRadius: "0.5rem",
+          },
+          "& .MuiDataGrid-columnHeader": {
+            backgroundColor: "rgb(37, 99, 235) !important",
+          },
+          "& .MuiDataGrid-columnHeaderTitle": {
+            fontWeight: "bold",
+            color: "white",
+          },
+          "& .MuiDataGrid-columnSeparator": {
+            color: "white",
+          },
+          "& .MuiDataGrid-sortIcon": {
+            color: "white",
+          },
+          "& .MuiDataGrid-menuIcon": {
+            color: "white",
+          },
+          "& .MuiDataGrid-iconButtonContainer": {
+            color: "white",
+          },
+          "& .MuiDataGrid-cell": {
+            borderBottom: "1px solid #e5e7eb",
+          },
+          "& .MuiDataGrid-row:hover": {
+            backgroundColor: "#f9fafb",
+          },
+        }}
+      />
+    </div>
     </div>
   );
 }

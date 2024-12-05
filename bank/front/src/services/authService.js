@@ -88,8 +88,10 @@ const authService = {
           });
     
           const { accessToken, newRefreshToken } = response.data;
-          localStorage.setItem('accessToken', accessToken);
-          localStorage.setItem('refreshToken', newRefreshToken);
+          if (newRefreshToken && accessToken) {
+            localStorage.setItem('refreshToken', newRefreshToken);
+            localStorage.setItem('accessToken', accessToken);
+          }
     
           return response.data;
         } catch (error) {

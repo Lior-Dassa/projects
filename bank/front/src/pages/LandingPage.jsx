@@ -7,8 +7,10 @@ import LoggedOutMessage from '../components/features/LoggedOutMessage.jsx'
 const LandingPage = ({ setIsConnected, isLoggedOut, setIsLoggedOut }) => {
 
   return (
-    <main className="min-h-screen bg-blue-50">
-      <LandingPageHeader setIsConnected={setIsConnected}/>
+    <main className="h-screen bg-blue-50 flex flex-col overflow-hidden">
+      <div className="flex-none">
+        <LandingPageHeader setIsConnected={setIsConnected}/>
+      </div>
 
       {isLoggedOut && (
         <PopUp isOpen={isLoggedOut} onClose={() => setIsLoggedOut(false)}>
@@ -16,9 +18,9 @@ const LandingPage = ({ setIsConnected, isLoggedOut, setIsLoggedOut }) => {
         </PopUp>
       )}
       
-      <section className="max-w-7xl mx-auto px-4 py-12">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">
+      <section className="flex-1 max-w-7xl mx-auto px-4 flex flex-col">
+        <div className="text-center mt-8">
+          <h2 className="text-4xl font-bold text-gray-900 mb-2">
             Welcome to Digital Banking
           </h2>
           <p className="text-xl text-gray-600">
@@ -26,11 +28,11 @@ const LandingPage = ({ setIsConnected, isLoggedOut, setIsLoggedOut }) => {
           </p>
         </div>
 
-        <div className="mb-12">
+        <div className="flex-1 flex items-center justify-center p-8">
           <img
             src={landing_page}
             alt="Banking Hero"
-            className="rounded-xl shadow-lg w-full"
+            className="rounded-xl shadow-lg object-scale-down h-full w-full"
           />
         </div>
       </section>

@@ -6,6 +6,12 @@ const GetUser = async function(req, res) {
 
     try {
         user = await getUser(email);
+        user = {
+            email: user._id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            phoneNumber: user.phoneNumber
+        }
     } catch (error) {
         console.log(error);
         return res.status(500).json({error: "Server error", message : "Uh oh something went wrong"});

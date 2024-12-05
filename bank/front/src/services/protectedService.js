@@ -53,6 +53,11 @@ const protectedService = {
         return response.data;
     },
 
+    getTransactions: async () => {
+        const response = await axiosClient.get(API_ENDPOINTS.TRANSACTIONS);
+        return response.data.transactions;
+    },
+
     getBalance: async () => {
         const response = await axiosClient.get(API_ENDPOINTS.BALANCE);
         return response.data.balance;

@@ -1,14 +1,56 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Check } from 'lucide-react';   
 import { useAuth } from '../../hooks/useAuth.js';
 export default function ConfirmationCodeForm({ email, onSwitchForms }) {
-  const [code, setCode] = useState('');
+  const [code, setCode] = useState(['','','','','','']);
   const [error, setError] = useState('');
   const [resendMessage, setResendMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isConfirmed, setIsConfirmed] = useState(false);
 
+  const inputRefs = [
+    useRef(null),
+    useRef(null),
+    useRef(null),
+    useRef(null),
+    useRef(null),
+    useRef(null)
+  ];
+
   const { confirmSignup, resendConfirmation } = useAuth();
+
+  const handleChange = (index, value) => {
+    if (!/^\d*$/.test(value)) return;
+
+    const newCode = [...code];
+    newCode[index] = value;
+    setCode(newCode);
+    if (value && index < code.length - 1) {
+      inputRefs[index + 1].current.focus();
+    }
+  };
+
+  const handleFocus = () => {
+    setError('');
+  };
+
+  const handleKeyDown = (index, event) => {
+    if (event.key === 'Backspace' && index > 0 && !code[index]) {
+      inputRefs[index - 1].current.focus();
+    } else if (event.key === 'ArrowLeft' && index > 0) {
+      event.preventDefault();
+      inputRefs[index - 1].current.focus();
+      setTimeout(() => {
+        inputRefs[index - 1].current.setSelectionRange(1, 1);
+      }, 0);
+    } else if (event.key === 'ArrowRight' && index < code.length - 1) {
+      event.preventDefault();
+      inputRefs[index + 1].current.focus();
+      setTimeout(() => {
+        inputRefs[index + 1].current.setSelectionRange(1, 1);
+      }, 0);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,7 +59,7 @@ export default function ConfirmationCodeForm({ email, onSwitchForms }) {
     setIsLoading(true);
 
     try {
-      await confirmSignup(code);
+      await confirmSignup(code.join(''));
       setIsConfirmed(true);
     } catch (err) {
       setError(err.message);
@@ -65,22 +107,24 @@ export default function ConfirmationCodeForm({ email, onSwitchForms }) {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Confirmation Code
             </label>
-            <input
-              type="text"
-              maxLength="6"
-              value={code}
-              onChange={(e) => {
-                const value = e.target.value.replace(/[^0-9]/g, '');
-                setCode(value);
-              }}
-              onFocus={() => {
-                  setError('');
-              }}
-              className={`block w-full px-4 py-3 border border-gray-300 rounded-md text-lg tracking-widest text-center focus:ring-blue-500 focus:border-blue-500"
-                  ${error ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
-              placeholder="000000"
-              required
-            />
+            
+            <div className="flex gap-2 justify-center">
+              {code.map((digit, index) => (
+                <input
+                  key={index}
+                  ref={inputRefs[index]}
+                  type="text"
+                  maxLength="1"
+                  value={digit}
+                  onChange={(e) => handleChange(index, e.target.value)}
+                  onKeyDown={(e) => handleKeyDown(index, e)}
+                  onFocus={() => handleFocus()}
+                  className={`w-8 h-12 mr-2 bg-gray-100 text-center text-xl font-semibold border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                    ${error ? 'border-red-500 bg-red-50' : 'border-gray-400'}`}
+                  required
+                />
+              ))}
+            </div>
           
             {error && (
               <p className="mt-1 text-sm text-red-600 error-message">

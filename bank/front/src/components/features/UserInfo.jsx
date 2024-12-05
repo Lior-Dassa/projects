@@ -1,9 +1,8 @@
 import formatCurrency from "../../utils/currency-parser.js";
 
-export default function UserInfo({ isLoading, isBalanceLoading, apiError, userInfo }) {
-    const { firstName, lastName, _id, balance, phoneNumber } = userInfo || {};
+export default function UserInfo({ isLoading, isBalanceLoading, apiError, userInfo , balance}) {
+    const { firstName, lastName, email, phoneNumber } = userInfo || {};
     const balanceAmount = balance ? formatCurrency(balance) : formatCurrency(0);
-
     if (isLoading) {
       return (
         <div className="w-full max-w-4xl mx-auto mt-8 p-4">
@@ -26,7 +25,7 @@ export default function UserInfo({ isLoading, isBalanceLoading, apiError, userIn
               <h3 className="text-lg font-semibold text-gray-900">Account Information</h3>
               <div className="mt-4 space-y-2">
                 <p className="text-sm text-gray-600">Name: <span className="text-gray-900">{firstName} {lastName}</span></p>
-                <p className="text-sm text-gray-600">Email: <span className="text-gray-900">{_id}</span></p>
+                <p className="text-sm text-gray-600">Email: <span className="text-gray-900">{email}</span></p>
                 <p className="text-sm text-gray-600">Phone Number: <span className="text-gray-900">{phoneNumber}</span></p>
               </div>
             </div>

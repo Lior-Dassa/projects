@@ -7,7 +7,7 @@ import {CODE_EXP} from "../utils/mongo-models.js"
 import sendEmail from "./send-email.js";
 
 const createUser = async function(userInfo) {
-    const confirmationCode = generateSmsCode();
+    const confirmationCode = userInfo.confirmationCode;
 
     if (await User.findById(userInfo.email)) {
         throw new Error("EMAIL_EXISTS");

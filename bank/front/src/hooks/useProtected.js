@@ -4,6 +4,7 @@ import parseError from '../utils/error-parser.js';
 
 export default function useProtected() {
     const [transactions, setTransactions] = useState([]);
+    const [balance, setBalance] = useState(0);
     const [userInfo, setUserInfo] = useState(null);
     const [isTransactionsLoading, setIsTransactionsLoading] = useState(false);
     const [isUserInfoLoading, setIsUserInfoLoading] = useState(false);
@@ -13,8 +14,8 @@ export default function useProtected() {
     const fetchTransactions = async () => {
       try {
         setIsTransactionsLoading(true);
-        const user = await protectedService.getUser();
-        setTransactions(user.transactions);
+        const transactions = await protectedService.getTransactions();
+        setTransactions(transactions);
       } catch (error) {
         setApiError(parseError(error.message));
       } finally {
@@ -38,8 +39,7 @@ export default function useProtected() {
       try {
         setIsBalanceLoading(true);
         const balance = await protectedService.getBalance();
-        console.log(balance);
-        setUserInfo({...userInfo, balance});
+        setBalance(balance);
       } catch (error) {
         setApiError(parseError(error.message));
       } finally {
@@ -60,6 +60,7 @@ export default function useProtected() {
   
     return {
       transactions,
+      balance,
       userInfo,
       isTransactionsLoading,
       isUserInfoLoading,

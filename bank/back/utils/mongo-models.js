@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 
-const CODE_EXP = 1 * 60 * 1000;
+const CODE_EXP = 5 * 60 * 1000;
 
 const transactionSchema = new mongoose.Schema({
     "from": String,
