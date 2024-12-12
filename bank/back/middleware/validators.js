@@ -15,7 +15,9 @@ const EmailValidator = body('email').isEmail().withMessage('Invalid email addres
 
 const ToValidator = body('to').isEmail().withMessage('to is not an email');
 
-const AmountValidator = body('amount').isNumeric().withMessage('amount is not a number');
+const AmountValidator = body('amount').isNumeric().withMessage('amount is not a number').isFloat({min: 0}).withMessage('amount is not positive');
+
+const SameEmailValidator = body('to').custom((value, {req}) => value !== req.body.email).withMessage('Can not send money to yourself');
 
 const AccessTokenValidator = function (req, res, next) {
 
@@ -43,4 +45,4 @@ const RefreshTokenValidator = function (req, res, next) {
 }
 
 export {NameValidator, PhoneValidator, EmailValidator, ToValidator, AmountValidator,
-            AccessTokenValidator, RefreshTokenValidator};
+            SameEmailValidator, AccessTokenValidator, RefreshTokenValidator};

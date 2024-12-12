@@ -18,26 +18,38 @@ export default function Dashboard({setIsConnected, setIsLoggedOut}) {
         isTransactionsLoading, 
         isUserInfoLoading,
         isBalanceLoading,
-        apiError, 
         fetchTransactions,
         fetchUserInfo,
         fetchBalance,
         postTransaction
     } = useProtected();
 
-    useEffect(() => {
-        if (isTableShouldRefresh) {
-            fetchTransactions();
+
+    const fetchData = async () => {
+        try {
+          if (isTableShouldRefresh) {
+            await fetchTransactions();
             setIsTableShouldRefresh(false);
-        }
-        if (isUserInfoShouldRefresh) {
-            fetchUserInfo();
+          }
+          if (isUserInfoShouldRefresh) {
+            await fetchUserInfo();
             setIsUserInfoShouldRefresh(false);
-        }
-        if (isBalanceShouldRefresh) {
-            fetchBalance();
+          }
+          if (isBalanceShouldRefresh) {
+            await fetchBalance();
             setIsBalanceShouldRefresh(false);
+          }
+        } catch (error) {
+          if (error.message.includes('token') || error.message.includes('expired')) {
+            authService.logout();
+            setIsLoggedOut(true);
+            setIsConnected(false);
+          }
         }
+      }
+
+    useEffect(() => {
+      fetchData();
     }, [isTableShouldRefresh, isUserInfoShouldRefresh, isBalanceShouldRefresh]);
 
     const handleTransactionSubmit = async (formData) => {
@@ -46,7 +58,8 @@ export default function Dashboard({setIsConnected, setIsLoggedOut}) {
             setIsTableShouldRefresh(true);
             setIsBalanceShouldRefresh(true);
         } catch (error) {
-            if (error.message.includes('token')) {
+            console.log("from dashboard", error);
+            if (error.message.includes('token') || error.message.includes('expired')) {
                 authService.logout();
                 setIsLoggedOut(true);
                 setIsConnected(false);
@@ -63,7 +76,6 @@ export default function Dashboard({setIsConnected, setIsLoggedOut}) {
         <UserInfo 
           isLoading={isUserInfoLoading}
           isBalanceLoading={isBalanceLoading}
-          apiError={apiError}
           userInfo={userInfo}
           balance={balance}
         />
@@ -72,7 +84,6 @@ export default function Dashboard({setIsConnected, setIsLoggedOut}) {
 
         <TransactionTable 
           isLoading={isTransactionsLoading}
-          apiError={apiError}
           transactions={transactions}
           email={userInfo?.email}
         />

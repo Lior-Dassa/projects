@@ -46,7 +46,7 @@ export default function TransactionForm({ onSubmit }) {
 
   const handleTransactionError = (errors) => {
     for (const errorMessage of errors) {
-        if (errorMessage.includes('recipient')) {
+        if (errorMessage.includes('recipient') || errorMessage.includes('to')) {
           setErrors(prev => ({
             ...prev,
             to: errorMessage

@@ -1,6 +1,6 @@
 import formatCurrency from "../../utils/currency-parser.js";
 
-export default function UserInfo({ isLoading, isBalanceLoading, apiError, userInfo , balance}) {
+export default function UserInfo({ isLoading, isBalanceLoading, userInfo , balance}) {
     const { firstName, lastName, email, phoneNumber } = userInfo || {};
     const balanceAmount = balance ? formatCurrency(balance) : formatCurrency(0);
     if (isLoading) {

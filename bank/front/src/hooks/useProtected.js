@@ -9,7 +9,6 @@ export default function useProtected() {
     const [isTransactionsLoading, setIsTransactionsLoading] = useState(false);
     const [isUserInfoLoading, setIsUserInfoLoading] = useState(false);
     const [isBalanceLoading, setIsBalanceLoading] = useState(false);
-    const [apiError, setApiError] = useState(null);
   
     const fetchTransactions = async () => {
       try {
@@ -17,7 +16,7 @@ export default function useProtected() {
         const transactions = await protectedService.getTransactions();
         setTransactions(transactions);
       } catch (error) {
-        setApiError(parseError(error.message));
+        throw error;
       } finally {
         setIsTransactionsLoading(false);
       }
@@ -29,7 +28,7 @@ export default function useProtected() {
         const user = await protectedService.getUser();
         setUserInfo(user);
       } catch (error) {
-        setApiError(parseError(error.message));
+        throw error;
       } finally {
         setIsUserInfoLoading(false);
       }
@@ -41,7 +40,7 @@ export default function useProtected() {
         const balance = await protectedService.getBalance();
         setBalance(balance);
       } catch (error) {
-        setApiError(parseError(error.message));
+        throw error;
       } finally {
         setIsBalanceLoading(false);
       }
@@ -53,7 +52,6 @@ export default function useProtected() {
         setIsTransactionsLoading(true);
         setIsBalanceLoading(true);
       } catch (error) {
-        setApiError(parseError(error.message));
         throw error;
       }
     };
@@ -65,8 +63,6 @@ export default function useProtected() {
       isTransactionsLoading,
       isUserInfoLoading,
       isBalanceLoading,
-      apiError,
-      setApiError,
       fetchTransactions,
       fetchUserInfo,
       fetchBalance,

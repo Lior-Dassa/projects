@@ -1,8 +1,13 @@
 import { DataGrid } from '@mui/x-data-grid';
 import formatCurrency from "../../utils/currency-parser.js";
 import formatDate from "../../utils/date-parser.js";
+import { Box } from "@mui/material";
 
-export default function TransactionTable({ isLoading, apiError, transactions, email }) {
+export default function TransactionTable({ isLoading, transactions, email }) {
+  const uniqueTransactions = transactions.filter((tx, index, self) =>
+    index === self.findIndex((t) => t._id === tx._id)
+  );
+
   const columns = [
     { 
       field: 'from', 
@@ -32,10 +37,13 @@ export default function TransactionTable({ isLoading, apiError, transactions, em
       headerName: 'Date', 
       flex: 1,
       minWidth: 130,
+      renderCell: (params) => (
+          <span>{formatDate(params.value)}</span>
+      ),
     },
   ];
 
-  const rows = transactions.map((tx) => ({
+  const rows = uniqueTransactions.map((tx) => ({
     id: tx._id,
     ...tx
   }));

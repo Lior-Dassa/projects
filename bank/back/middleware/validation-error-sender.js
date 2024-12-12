@@ -6,6 +6,7 @@ const ValidationErrorSender = function(req,res,next) {
     if (!errors.isEmpty()) {
         let validationErrors = [];
         errors.array().map((error) => {
+            console.log(error.msg);
             validationErrors.push(error.msg);
         });
 
